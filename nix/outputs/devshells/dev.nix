@@ -4,6 +4,7 @@ perSystem.devshell.mkShell (
   {
     imports = [
       "${extraModulesPath}/locale.nix"
+      perSystem.self.default.devshellModule
       ./modules/vscode.nix
     ]
     ++ (with inputs.devshell-modules.devshellModules; [

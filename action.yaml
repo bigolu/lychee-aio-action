@@ -1,0 +1,38 @@
+name: Lychee AIO
+description: Run lychee and open/close an issue based on the result.
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+    - uses: canidae-solutions/lix-quick-install-action@cdb5d0931be2223edbb9bad884341fcacdac298f # v4
+      with:
+        lix_conf: |
+          show-trace = true
+    - name: Restore lychee cache
+      uses: actions/cache/restore@v5
+      with:
+        path: .lycheecache
+        key: lychee-${{ github.sha }}
+        restore-keys: lychee-
+    - uses: bigolu/cache-nix-gc-roots-action/restore@main
+    - name: Run lychee
+      shell: bash
+      env:
+        # Used by `gh` for authentication
+        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        # First build it so a GC root can be made
+        nix build --out-link "$ACTION_PATH/result" "$ACTION_PATH"
+        nix run "$ACTION_PATH"
+    - if: always()
+      uses: bigolu/cache-nix-gc-roots-action/save@main
+    - name: Save lychee cache
+      # Only cache if .lycheecache exists. hashFiles returns an empty string if
+      # a file doesn't exist.
+      if: hashFiles(.lycheecache) != ''
+      uses: actions/cache/save@v5
+      with:
+        path: .lycheecache
+        key: ${{ steps.restore-cache.outputs.cache-primary-key }}
