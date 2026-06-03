@@ -5,7 +5,7 @@ let
 
   pname = "lychee-aio";
   dependencies = with pkgs; [
-    git
+    gitMinimal
     coreutils
     lychee
     gh
@@ -26,7 +26,7 @@ resholve.mkDerivation {
     interpreter = "${bash}/bin/bash";
     inputs = dependencies;
     execer = [
-      "cannot:${getExe pkgs.git}"
+      "cannot:${getExe pkgs.gitMinimal}"
       "cannot:${getExe pkgs.lychee}"
       "cannot:${getExe pkgs.gh}"
     ];
