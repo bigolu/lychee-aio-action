@@ -16,16 +16,13 @@ runs:
         restore-keys: lychee-
     - uses: bigolu/cache-nix-gc-roots-action/restore@main
     - name: Run lychee
-      shell: bash
+      shell: nix run --file flake-compat.nix outputsForCurrentSystem.devShells.ci -- bash {0}
       env:
         # Used by `gh` for authentication
         GITHUB_TOKEN: ${{ github.token }}
         GITHUB_WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         ACTION_PATH: ${{ github.action_path }}
-      run: |
-        # First build it so a GC root can be made
-        nix build --out-link "$ACTION_PATH/result" "$ACTION_PATH"
-        nix run "$ACTION_PATH"
+      run: lychee-aio
     - if: always()
       uses: bigolu/cache-nix-gc-roots-action/save@main
     - name: Save lychee cache
