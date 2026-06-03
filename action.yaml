@@ -9,6 +9,7 @@ runs:
         lix_conf: |
           show-trace = true
     - name: Restore lychee cache
+      id: restore-cache
       uses: actions/cache/restore@v5
       with:
         path: .lycheecache
