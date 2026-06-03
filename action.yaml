@@ -31,7 +31,7 @@ runs:
     - name: Save lychee cache
       # Only cache if .lycheecache exists. hashFiles returns an empty string if
       # a file doesn't exist.
-      if: hashFiles(.lycheecache) != ''
+      if: hashFiles('.lycheecache') != ''
       uses: actions/cache/save@v5
       with:
         path: .lycheecache
